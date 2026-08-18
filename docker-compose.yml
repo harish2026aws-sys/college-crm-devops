@@ -1,7 +1,9 @@
 services:
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: college-crm-app
     ports:
       - "3000:3000"
@@ -24,7 +26,7 @@ services:
       MYSQL_PASSWORD: crm_password
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test:
         [
@@ -39,14 +41,12 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     container_name: college-crm-redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     restart: unless-stopped
